@@ -1,5 +1,8 @@
 # focus-mode package
 
-A short description of your package.
+A simple package to enable/disable a _zen_ mode. When focus-mode is enabled, you can only have a single tab per pane, and, it toggles the tree-view.
 
-![A screenshot of your package](https://f.cloud.github.com/assets/69169/2290250/c35d867a-a017-11e3-86be-cd7c5bf3ff9b.gif)
+Toggle using: ctrl-alt-k 
+
+## To Do
+* Update code so that instead of toggling the tree-view, it hides, or, restores original state

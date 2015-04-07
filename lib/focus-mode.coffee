@@ -28,12 +28,19 @@ module.exports = FocusMode =
 
     @isEnabled = !@isEnabled
 
+    pane = atom.workspace.getActivePane()
+    paneView = atom.views.getView pane
+    tabView = paneView.querySelector '.tab-bar'
+
     if @isEnabled
       atom.workspaceView.trigger 'tree-view:toggle'
-      pane = atom.workspace.getActivePane()
+      tabView.setAttribute 'focus-mode', tabView.style.display
+      tabView.style.display = 'none'
+
       @handlePaneItemEvent pane
     else
       atom.workspaceView.trigger 'tree-view:toggle'
+      tabView.style.display = tabView.getAttribute 'focus-mode'
 
   initPane: (pane) ->
     console.log 'FocusMode was inited!'
@@ -48,5 +55,9 @@ module.exports = FocusMode =
   handlePaneItemEvent: (pane) ->
     console.log 'FocusMode Pane event!'
 
-    if @isEnabled
-      pane.destroyInactiveItems()
+    # paneView = atom.views.getView pane
+    # tabView = paneView.querySelector '.tab-bar'
+
+    # RichS: Aggressive/Less Aggressive. Depends on whether we want instant knowledge that we have unsaved data
+    # if @isEnabled
+    #   pane.destroyInactiveItems()

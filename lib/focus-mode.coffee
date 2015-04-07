@@ -3,12 +3,11 @@ FocusModeView = require './focus-mode-view'
 
 module.exports = FocusMode =
   focusModeView: null
-  modalPanel: null
   subscriptions: null
+  isEnabled: false
 
   activate: (state) ->
     @focusModeView = new FocusModeView(state.focusModeViewState)
-    @modalPanel = atom.workspace.addModalPanel(item: @focusModeView.getElement(), visible: false)
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
@@ -18,50 +17,36 @@ module.exports = FocusMode =
     @subscriptions.add atom.workspace.observePanes (pane) => @initPane pane
 
   deactivate: ->
-    @modalPanel.destroy()
     @subscriptions.dispose()
     @focusModeView.destroy()
 
   serialize: ->
     focusModeViewState: @focusModeView.serialize()
 
-  initPane: (pane) ->
-      subscription = new CompositeDisposable
-
-      subscription.add pane.onDidDestroy ->
-        subscription.dispose()
-
-      # subscription.add pane.onDidAddItem =>
-      #   @handlePaneItemEvent pane
-      #
-      # subscription.add pane.onDidRemoveItem =>
-      #   @handlePaneItemEvent pane
-
-      subscription.add pane.onDidChangeActivePaneItem =>
-        @handlePaneItemEvent pane
-
-      @handlePaneItemEvent pane, 0
-
-  handlePaneItemEvent: (pane, delay = 150) ->
-    paneView = atom.views.getView pane
-    tabView = paneView.querySelector '.tab-bar'
-
-    # hideTab = pane.getItems().length == 1
-    hideTab = true
-
-    # ToDo: Need code to close old tabs (??)
-
-    # Save the display state (if we need to restore it)
-    if hideTab
-      tabView.setAttribute 'focus-mode', tabView.style.display
-      tabView.style.display = "none"
-    else
-      tabView.style.display = tabView.getAttribute 'focus-mode'
-
   toggle: ->
     console.log 'FocusMode was toggled!'
 
-    if @modalPanel.isVisible()
-      @modalPanel.hide()
+    @isEnabled = !@isEnabled
+
+    if @isEnabled
+      atom.workspaceView.trigger 'tree-view:toggle'
+      pane = atom.workspace.getActivePane()
+      @handlePaneItemEvent pane
     else
-      @modalPanel.show()
+      atom.workspaceView.trigger 'tree-view:toggle'
+
+  initPane: (pane) ->
+    console.log 'FocusMode was inited!'
+    subscription = new CompositeDisposable
+
+    subscription.add pane.onDidDestroy ->
+      subscription.dispose()
+
+    subscription.add pane.onDidChangeActiveItem => @handlePaneItemEvent pane
+    @handlePaneItemEvent pane
+
+  handlePaneItemEvent: (pane) ->
+    console.log 'FocusMode Pane event!'
+
+    if @isEnabled
+      pane.destroyInactiveItems()

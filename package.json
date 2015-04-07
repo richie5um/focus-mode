@@ -1,7 +1,7 @@
 {
   "name": "focus-mode",
   "main": "./lib/focus-mode",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Only allows a single tab to be open",
   "activationCommands": {
     "atom-workspace": "focus-mode:toggle"
@@ -11,6 +11,5 @@
   "engines": {
     "atom": ">=0.174.0 <2.0.0"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
